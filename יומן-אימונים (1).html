@@ -1,0 +1,2733 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>יומן אימונים</title>
+<style>
+  :root{
+    --bg:#12151a;
+    --surface:#1b2028;
+    --surface2:#242b35;
+    --line:#2e3540;
+    --accent:#d7ff3f;
+    --accent-dim:#3c4a14;
+    --text:#eef1e8;
+    --muted:#8b93a0;
+    --danger:#ff6f6f;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:190px;
+  }
+  header{
+    padding:22px 18px 10px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .kicker{
+    color:var(--muted);
+    font-size:13px;
+    margin:0 0 2px;
+  }
+  h1{
+    margin:0;
+    font-size:26px;
+    font-weight:800;
+    letter-spacing:-0.5px;
+  }
+  .history-btn{
+    flex-shrink:0;
+    background:var(--surface);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:12px;
+    padding:10px 12px;
+    font-size:13px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+    margin-top:2px;
+  }
+  .history-btn:active{
+    background:var(--surface2);
+  }
+  .history-btn.active{
+    background:var(--accent);
+    color:#12151a;
+    border-color:var(--accent);
+  }
+  .toolbar-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:0 18px 12px;
+    flex-wrap:wrap;
+  }
+  .workout-clock{
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:6px 6px 6px 12px;
+  }
+  .workout-clock span{
+    color:var(--muted);
+    font-size:13px;
+    font-variant-numeric:tabular-nums;
+  }
+  .workout-clock.paused span{
+    color:var(--danger);
+  }
+  .workout-pause-btn{
+    background:var(--surface2);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:9px;
+    width:30px;
+    height:30px;
+    font-size:13px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+  }
+  .day-switch{
+    display:flex;
+    gap:8px;
+    padding:14px 18px 4px;
+  }
+  .day-btn{
+    flex:1;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px 6px;
+    text-align:center;
+    color:var(--muted);
+    cursor:pointer;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .day-btn .num{
+    display:block;
+    font-size:20px;
+    font-weight:800;
+  }
+  .day-btn .name{
+    display:block;
+    font-size:12px;
+    margin-top:2px;
+  }
+  .day-btn.active{
+    background:var(--accent);
+    color:#12151a;
+    border-color:var(--accent);
+  }
+  .day-subtitle{
+    padding:14px 18px 4px;
+    font-size:20px;
+    font-weight:800;
+    letter-spacing:-0.3px;
+  }
+  .day-muscles{
+    padding:0 18px 10px;
+    color:var(--muted);
+    font-size:14px;
+  }
+  .live-volume{
+    padding:0 18px 10px;
+    color:var(--accent);
+    font-size:13px;
+    font-weight:700;
+    min-height:4px;
+  }
+  main{
+    padding:6px 18px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:14px 14px 12px;
+  }
+  .card-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:8px;
+  }
+  .card-head-actions{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-shrink:0;
+  }
+  .ex-name{
+    font-size:16px;
+    font-weight:700;
+  }
+  .icon-btn{
+    background:var(--surface2);
+    border:1px solid var(--line);
+    color:var(--muted);
+    border-radius:9px;
+    width:32px;
+    height:32px;
+    font-size:14px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+  }
+  .icon-btn.danger{
+    color:var(--danger);
+  }
+  .ex-stopwatch-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:-2px 0 10px;
+  }
+  .ex-stopwatch-display{
+    background:var(--surface2);
+    border:1px solid var(--line);
+    border-radius:9px;
+    padding:7px 12px;
+    font-size:13.5px;
+    font-weight:700;
+    font-variant-numeric:tabular-nums;
+    color:var(--text);
+    min-width:58px;
+    text-align:center;
+  }
+  .ex-stopwatch-btn.running{
+    background:var(--accent);
+    color:#12151a;
+    border-color:var(--accent);
+  }
+  .last-note{
+    color:var(--muted);
+    font-size:12.5px;
+    margin:-4px 0 10px;
+  }
+  table.sets{
+    width:100%;
+    border-collapse:collapse;
+  }
+  table.sets th{
+    text-align:center;
+    color:var(--muted);
+    font-weight:600;
+    font-size:12px;
+    padding-bottom:6px;
+  }
+  table.sets td{
+    padding:4px 3px;
+  }
+  table.sets input{
+    width:100%;
+    background:var(--surface2);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:9px;
+    padding:9px 4px;
+    text-align:center;
+    font-size:15px;
+  }
+  table.sets input:focus{
+    outline:none;
+    border-color:var(--accent);
+  }
+  .set-idx-btn{
+    width:34px;
+    height:34px;
+    border-radius:9px;
+    border:1px solid transparent;
+    background:transparent;
+    color:var(--muted);
+    font-size:13px;
+    cursor:pointer;
+  }
+  .set-idx-btn.warmup{
+    background:var(--accent-dim);
+    border-color:var(--accent);
+    color:var(--accent);
+    font-weight:700;
+  }
+  .set-save-btn{
+    width:36px;
+    height:36px;
+    border-radius:9px;
+    border:1px solid var(--line);
+    background:var(--surface2);
+    color:var(--muted);
+    font-size:15px;
+    cursor:pointer;
+  }
+  .set-save-btn:active{
+    background:var(--line);
+  }
+  .set-save-btn.saved{
+    background:var(--accent-dim);
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+  .ex-note{
+    width:100%;
+    background:var(--surface2);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:9px;
+    padding:8px 10px;
+    font-size:13px;
+    margin-top:12px;
+    resize:vertical;
+    font-family:inherit;
+  }
+  .ex-note:focus{
+    outline:none;
+    border-color:var(--accent);
+  }
+  .video-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:12px;
+    flex-wrap:wrap;
+  }
+  .video-btn{
+    background:var(--surface2);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:10px;
+    padding:9px 12px;
+    font-size:13.5px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .video-btn.has-video{
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+  video.preview{
+    max-width:120px;
+    border-radius:8px;
+    border:1px solid var(--line);
+  }
+  .edit-panel-title{
+    font-size:15px;
+    font-weight:700;
+    margin-bottom:12px;
+  }
+  .sets-stepper{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .sets-stepper .val{
+    font-weight:800;
+    font-size:16px;
+    min-width:16px;
+    text-align:center;
+  }
+  .add-ex-row{
+    display:flex;
+    gap:8px;
+  }
+  .add-ex-row input{
+    flex:1;
+    background:var(--surface2);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:9px;
+    padding:10px;
+    font-size:14px;
+  }
+  .footer-bar{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    background:linear-gradient(0deg, var(--bg) 70%, transparent);
+    padding:22px 18px 18px;
+    display:flex;
+    gap:10px;
+    z-index:30;
+  }
+  .save-btn{
+    flex:1;
+    background:var(--accent);
+    color:#12151a;
+    border:none;
+    border-radius:12px;
+    padding:15px;
+    font-size:16px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .reset-btn{
+    background:var(--surface2);
+    color:var(--muted);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:15px 16px;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .toast{
+    position:fixed;
+    top:16px;
+    left:50%;
+    transform:translateX(-50%) translateY(-40px);
+    background:var(--accent);
+    color:#12151a;
+    padding:10px 18px;
+    border-radius:30px;
+    font-weight:700;
+    font-size:14px;
+    opacity:0;
+    transition:opacity .25s, transform .25s;
+    pointer-events:none;
+    z-index:80;
+    max-width:88vw;
+    text-align:center;
+  }
+  .toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+  }
+
+  /* floating action buttons: timer + music */
+  .fab-row{
+    position:fixed;
+    bottom:98px;
+    left:18px;
+    right:18px;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    z-index:35;
+    pointer-events:none;
+  }
+  .fab{
+    pointer-events:auto;
+    background:var(--surface);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:14px;
+    padding:11px 16px;
+    font-size:13.5px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    box-shadow:0 6px 16px rgba(0,0,0,0.4);
+    cursor:pointer;
+  }
+  .fab.timer-active,
+  .fab.music-active{
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+
+  /* shared bottom-sheet overlay style (history / timer / music / chart / confirm) */
+  .history-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(9,11,14,0.7);
+    z-index:60;
+    display:flex;
+    align-items:flex-end;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s;
+  }
+  .history-overlay.open{
+    opacity:1;
+    pointer-events:auto;
+  }
+  .history-panel{
+    background:var(--bg);
+    width:100%;
+    max-height:88vh;
+    border-radius:20px 20px 0 0;
+    border-top:1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    transform:translateY(16px);
+    transition:transform .2s;
+  }
+  .history-overlay.open .history-panel{
+    transform:translateY(0);
+  }
+  .history-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 18px 10px;
+    border-bottom:1px solid var(--line);
+  }
+  .history-head h2{
+    margin:0;
+    font-size:18px;
+    font-weight:800;
+  }
+  .history-close{
+    background:var(--surface);
+    border:1px solid var(--line);
+    color:var(--muted);
+    width:32px;
+    height:32px;
+    border-radius:10px;
+    font-size:16px;
+    cursor:pointer;
+    line-height:1;
+  }
+  .history-day-tabs, .history-mode-tabs{
+    display:flex;
+    gap:6px;
+    padding:12px 18px;
+  }
+  .history-day-tab, .history-mode-tab{
+    flex:1;
+    text-align:center;
+    padding:8px 4px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--muted);
+    font-size:12.5px;
+    cursor:pointer;
+  }
+  .history-day-tab.active, .history-mode-tab.active{
+    background:var(--accent);
+    color:#12151a;
+    border-color:var(--accent);
+  }
+  .history-body{
+    overflow-y:auto;
+    padding:4px 18px 24px;
+    flex:1;
+  }
+  .history-empty{
+    color:var(--muted);
+    font-size:14px;
+    padding:30px 4px;
+    text-align:center;
+  }
+  .session{
+    border:1px solid var(--line);
+    border-radius:14px;
+    margin-bottom:12px;
+    overflow:hidden;
+  }
+  .session-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 14px;
+    background:var(--surface);
+    cursor:pointer;
+  }
+  .session-date{
+    font-weight:700;
+    font-size:14.5px;
+  }
+  .session-sub{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:2px;
+  }
+  .session-chevron{
+    color:var(--muted);
+    font-size:14px;
+    transition:transform .15s;
+  }
+  .session.open .session-chevron{
+    transform:rotate(180deg);
+  }
+  .session-detail{
+    display:none;
+    padding:4px 14px 12px;
+  }
+  .session.open .session-detail{
+    display:block;
+  }
+  .session-ex-row{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    padding:7px 0;
+    border-bottom:1px solid var(--line);
+    font-size:13.5px;
+    gap:10px;
+  }
+  .session-ex-row:last-child{
+    border-bottom:none;
+  }
+  .session-ex-name{
+    color:var(--text);
+    flex-shrink:0;
+  }
+  .session-ex-sets{
+    color:var(--muted);
+    text-align:left;
+    font-size:13px;
+  }
+  .session-note{
+    color:var(--muted);
+    font-size:12px;
+    padding:0 0 8px;
+  }
+  .set-log-row{
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px 12px;
+    margin-bottom:8px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    font-size:13px;
+  }
+  .set-log-main{
+    font-weight:700;
+  }
+  .set-log-sub{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:2px;
+  }
+  .set-log-time{
+    color:var(--muted);
+    font-size:12px;
+    white-space:nowrap;
+  }
+  .warmup-tag{
+    color:var(--accent);
+    font-size:11px;
+    font-weight:700;
+    margin-inline-start:6px;
+  }
+
+  /* timer panel */
+  .timer-body{
+    padding:20px 18px 30px;
+    text-align:center;
+  }
+  .preset-row{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+  }
+  .preset-btn{
+    background:var(--surface2);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:10px;
+    padding:9px 15px;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .preset-btn.active{
+    background:var(--accent);
+    color:#12151a;
+    border-color:var(--accent);
+  }
+  .timer-display{
+    font-size:58px;
+    font-weight:800;
+    letter-spacing:1px;
+    margin:6px 0 22px;
+    font-variant-numeric:tabular-nums;
+  }
+  .timer-controls{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+  }
+  .timer-action-btn{
+    background:var(--accent);
+    color:#12151a;
+    border:none;
+    border-radius:12px;
+    padding:14px 34px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .timer-action-btn.is-paused{
+    background:var(--surface2);
+    color:var(--text);
+    border:1px solid var(--line);
+  }
+  .timer-reset-btn{
+    background:var(--surface2);
+    color:var(--muted);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 20px;
+    font-size:14px;
+    cursor:pointer;
+  }
+
+  /* music panel */
+  .music-body{
+    padding:16px 18px 28px;
+  }
+  .music-pick{
+    width:100%;
+    justify-content:center;
+    margin-bottom:14px;
+  }
+  .music-now{
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+    margin-bottom:14px;
+    min-height:18px;
+  }
+  .music-controls{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    margin-bottom:14px;
+  }
+  .music-side-btn{
+    background:var(--surface2);
+    color:var(--text);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px 16px;
+    font-size:15px;
+    cursor:pointer;
+  }
+  .music-play-btn{
+    background:var(--accent);
+    color:#12151a;
+    border:none;
+    border-radius:12px;
+    padding:12px 26px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .music-playlist{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    max-height:28vh;
+    overflow-y:auto;
+  }
+  .music-track{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:9px 12px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    font-size:13px;
+    cursor:pointer;
+    background:var(--surface);
+  }
+  .music-track.active{
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+  .music-track-name{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .music-note{
+    color:var(--muted);
+    font-size:11px;
+    text-align:center;
+    margin-top:12px;
+  }
+
+  /* chart panel */
+  .chart-body{
+    padding:20px 18px 30px;
+    text-align:center;
+  }
+
+  /* nutrition totals */
+  .nut-totals{
+    display:flex;
+    gap:8px;
+    padding:14px 18px 6px;
+  }
+  .nut-total-item{
+    flex:1;
+    background:var(--surface2);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:8px 4px;
+    text-align:center;
+  }
+  .nut-total-val{
+    display:block;
+    font-weight:800;
+    font-size:14px;
+  }
+  .nut-total-label{
+    display:block;
+    color:var(--muted);
+    font-size:10.5px;
+    margin-top:2px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <p class="kicker">יומן אימונים · חדר כושר</p>
+    <h1>שלושה ימים, חמישה חלקי גוף</h1>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+    <button class="history-btn" id="historyBtn">📊 היסטוריה</button>
+    <button class="history-btn" id="moreBtn">⋯ עוד</button>
+  </div>
+</header>
+
+<div class="toolbar-row">
+  <button class="history-btn" id="editBtn">✏️ ערוך תוכנית</button>
+  <button class="history-btn" id="unitBtn">ק"ג</button>
+  <div class="workout-clock" id="workoutClockWrap">
+    <span id="workoutElapsed">⏳ 00:00:00</span>
+    <button class="workout-pause-btn" id="workoutPauseBtn" title="עצור זמן אימון">⏸</button>
+  </div>
+</div>
+
+<div class="day-switch" id="dayTabs"></div>
+<div class="day-subtitle" id="daySubtitle"></div>
+<div class="day-muscles" id="dayMuscles"></div>
+<div class="live-volume" id="liveVolume"></div>
+
+<main id="exerciseList"></main>
+
+<div class="fab-row">
+  <button class="fab" id="musicFab">🎵 <span>מוזיקה</span></button>
+  <button class="fab" id="timerFab">⏱ <span id="timerFabLabel">מנוחה</span></button>
+</div>
+
+<div class="footer-bar">
+  <button class="reset-btn" id="resetBtn">נקה טופס</button>
+  <button class="save-btn" id="saveBtn">שמור אימון היום</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="history-overlay" id="historyOverlay">
+  <div class="history-panel">
+    <div class="history-head">
+      <h2>היסטוריית אימונים</h2>
+      <button class="history-close" id="historyCloseBtn">✕</button>
+    </div>
+    <div class="history-mode-tabs" id="historyModeTabs">
+      <button class="history-mode-tab active" data-mode="sessions">אימונים מלאים</button>
+      <button class="history-mode-tab" data-mode="sets">כל הסטים</button>
+    </div>
+    <div class="history-day-tabs" id="historyDayTabs"></div>
+    <div class="history-body" id="historyBody"></div>
+  </div>
+</div>
+
+<div class="history-overlay" id="timerOverlay">
+  <div class="history-panel">
+    <div class="history-head">
+      <h2>שעון מנוחה</h2>
+      <button class="history-close" id="timerCloseBtn">✕</button>
+    </div>
+    <div class="timer-body">
+      <div class="timer-display" id="timerDisplay">01:30</div>
+      <div class="preset-row" id="presetRow">
+        <button class="preset-btn" data-preset="30">30 שנ׳</button>
+        <button class="preset-btn" data-preset="60">60 שנ׳</button>
+        <button class="preset-btn active" data-preset="90">90 שנ׳</button>
+        <button class="preset-btn" data-preset="120">120 שנ׳</button>
+      </div>
+      <div class="timer-controls">
+        <button class="timer-action-btn" id="timerStartBtn">התחל</button>
+        <button class="timer-reset-btn" id="timerResetBtn">איפוס</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="history-overlay" id="musicOverlay">
+  <div class="history-panel">
+    <div class="history-head">
+      <h2>נגן מוזיקה</h2>
+      <button class="history-close" id="musicCloseBtn">✕</button>
+    </div>
+    <div class="music-body">
+      <label class="video-btn music-pick">
+        🎵 <span id="musicPickLabel">בחר שירים מהמכשיר</span>
+        <input type="file" accept="audio/*" multiple style="display:none" id="musicFileInput">
+      </label>
+      <div class="music-now" id="musicNowPlaying">לא נבחר שיר</div>
+      <div class="music-controls">
+        <button class="music-side-btn" id="musicPrevBtn">⏮</button>
+        <button class="music-play-btn" id="musicPlayBtn">▶ נגן</button>
+        <button class="music-side-btn" id="musicNextBtn">⏭</button>
+      </div>
+      <div class="music-playlist" id="musicPlaylist"></div>
+      <div class="music-note">השירים נטענים מהמכשיר לצורך הפעלה בלבד ולא נשמרים אחרי רענון הדף</div>
+    </div>
+  </div>
+</div>
+
+<div class="history-overlay" id="chartOverlay">
+  <div class="history-panel" style="max-height:72vh;">
+    <div class="history-head">
+      <h2 id="chartTitle">התקדמות</h2>
+      <button class="history-close" id="chartCloseBtn">✕</button>
+    </div>
+    <div class="chart-body" id="chartBody"></div>
+  </div>
+</div>
+
+<div class="history-overlay" id="confirmOverlay">
+  <div class="history-panel" style="max-height:40vh;">
+    <div class="history-head">
+      <h2 id="confirmTitle">לנקות את הטופס?</h2>
+    </div>
+    <div style="padding:20px 18px 26px;">
+      <p style="color:var(--muted);font-size:14px;margin:0 0 18px;" id="confirmMessage">כל הנתונים שהוזנו בטופס הנוכחי (שלא נשמרו) יימחקו ולא ניתן יהיה לשחזר אותם.</p>
+      <div style="display:flex;gap:10px;">
+        <button class="reset-btn" id="confirmCancelBtn" style="flex:1;">ביטול</button>
+        <button class="save-btn" id="confirmOkBtn" style="flex:1;background:var(--danger);color:#fff;">נקה בכל זאת</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="history-overlay" id="moreOverlay">
+  <div class="history-panel" style="max-height:50vh;">
+    <div class="history-head">
+      <h2>עוד</h2>
+      <button class="history-close" id="moreCloseBtn">✕</button>
+    </div>
+    <div style="padding:10px 18px 24px;display:flex;flex-direction:column;gap:10px;">
+      <button class="reset-btn" id="openBwBtn" style="text-align:right;">⚖️ מעקב משקל גוף</button>
+      <button class="reset-btn" id="openNutBtn" style="text-align:right;">🍎 יומן תזונה</button>
+      <button class="reset-btn" id="openBackupBtn" style="text-align:right;">⇅ גיבוי וייבוא נתונים</button>
+    </div>
+  </div>
+</div>
+
+<div class="history-overlay" id="bodyweightOverlay">
+  <div class="history-panel">
+    <div class="history-head">
+      <h2>מעקב משקל גוף</h2>
+      <button class="history-close" id="bwCloseBtn">✕</button>
+    </div>
+    <div style="padding:16px 18px;">
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <input type="number" inputmode="decimal" step="0.1" id="bwInput" placeholder="משקל" style="flex:1;background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:10px;font-size:15px;text-align:center;">
+        <button class="save-btn" id="bwSaveBtn" style="flex:none;padding:10px 20px;">שמור להיום</button>
+      </div>
+      <div id="bwChart" style="margin-bottom:14px;"></div>
+    </div>
+    <div class="history-body" id="bwList" style="padding-top:0;"></div>
+  </div>
+</div>
+
+<div class="history-overlay" id="nutritionOverlay">
+  <div class="history-panel">
+    <div class="history-head">
+      <h2>יומן תזונה</h2>
+      <button class="history-close" id="nutCloseBtn">✕</button>
+    </div>
+    <div style="padding:12px 18px 0;display:flex;align-items:center;justify-content:center;gap:14px;">
+      <button class="icon-btn" id="nutPrevDay">◀</button>
+      <div id="nutDateLabel" style="font-weight:700;font-size:15px;min-width:110px;text-align:center;"></div>
+      <button class="icon-btn" id="nutNextDay">▶</button>
+    </div>
+    <div class="nut-totals" id="nutTotals"></div>
+    <div style="padding:0 18px;">
+      <div class="add-ex-row" style="flex-wrap:wrap;gap:6px;">
+        <input type="text" id="nutNameInput" placeholder="מה אכלת?" style="flex:2;min-width:120px;">
+        <input type="number" id="nutCalInput" placeholder="קל׳" style="flex:1;min-width:54px;">
+        <input type="number" id="nutProInput" placeholder="חלבון" style="flex:1;min-width:54px;">
+        <input type="number" id="nutCarbInput" placeholder="פחמ׳" style="flex:1;min-width:54px;">
+        <input type="number" id="nutFatInput" placeholder="שומן" style="flex:1;min-width:54px;">
+      </div>
+      <button class="save-btn" id="nutAddBtn" style="width:100%;margin:10px 0 16px;">+ הוסף ליומן</button>
+      <details style="margin-bottom:10px;">
+        <summary style="color:var(--muted);font-size:13px;cursor:pointer;">🎯 הגדרת יעד יומי</summary>
+        <div class="add-ex-row" style="flex-wrap:wrap;gap:6px;margin-top:8px;">
+          <input type="number" id="goalCalInput" placeholder="יעד קלוריות" style="flex:1;min-width:100px;">
+          <input type="number" id="goalProInput" placeholder="יעד חלבון" style="flex:1;min-width:100px;">
+          <input type="number" id="goalCarbInput" placeholder="יעד פחמימות" style="flex:1;min-width:100px;">
+          <input type="number" id="goalFatInput" placeholder="יעד שומן" style="flex:1;min-width:100px;">
+        </div>
+        <button class="reset-btn" id="goalSaveBtn" style="width:100%;margin-top:8px;">שמור יעד</button>
+      </details>
+    </div>
+    <div class="history-body" id="nutEntryList"></div>
+  </div>
+</div>
+
+<div class="history-overlay" id="backupOverlay">
+  <div class="history-panel" style="max-height:50vh;">
+    <div class="history-head">
+      <h2>גיבוי וייבוא נתונים</h2>
+      <button class="history-close" id="backupCloseBtn">✕</button>
+    </div>
+    <div style="padding:16px 18px 28px;display:flex;flex-direction:column;gap:12px;">
+      <p style="color:var(--muted);font-size:13px;margin:0;">הנתונים נשמרים רק בדפדפן הזה. מומלץ לגבות מדי פעם, ולייבא בחזרה אם תחליף מכשיר או תנקה קאש.</p>
+      <button class="save-btn" id="exportBtn">⬇️ הורד קובץ גיבוי</button>
+      <label class="video-btn" style="justify-content:center;">
+        ⬆️ <span>ייבוא קובץ גיבוי</span>
+        <input type="file" accept="application/json" style="display:none" id="importFileInput">
+      </label>
+    </div>
+  </div>
+</div>
+
+<script>
+const DEFAULT_DAYS = [
+  {
+    key: 'sunday', order: 1, label: 'ראשון', muscles: 'רגליים + יד אחורית (טריצפס)',
+    exercises: [
+      { id: 'squat', name: 'סקוואט' },
+      { id: 'rdl', name: 'דדליפט רומני' },
+      { id: 'tricep_long', name: 'יד אחורית — ראש ארוך' },
+      { id: 'tricep_short', name: 'יד אחורית — ראש קצר' },
+      { id: 'tricep_mid', name: 'יד אחורית — ראש אמצעי' },
+    ]
+  },
+  {
+    key: 'monday', order: 2, label: 'שני', muscles: 'חזה + בטן + כתפיים',
+    exercises: [
+      { id: 'bench_incline', name: "בנץ' (לחיצת חזה בשיפוע)" },
+      { id: 'bench_flat', name: 'ספסל שטוח (לחיצת חזה)' },
+      { id: 'shoulder_front', name: 'כתף קדמי' },
+      { id: 'shoulder_side', name: 'כתף צד' },
+      { id: 'shoulder_rear', name: 'כתף אחורית' },
+      { id: 'abs', name: 'בטן' },
+    ]
+  },
+  {
+    key: 'tuesday', order: 3, label: 'שלישי', muscles: 'גב + יד קדמית (ביצפס)',
+    exercises: [
+      { id: 'pullup', name: 'מתח' },
+      { id: 'bicep_short', name: 'יד קדמית — ראש קצר' },
+      { id: 'bicep_long', name: 'יד קדמית — ראש ארוך' },
+      { id: 'pulley_up', name: 'פולי עליון' },
+      { id: 'row', name: 'חתירה' },
+      { id: 'pulley_down', name: 'פולי תחתון' },
+    ]
+  },
+];
+
+let DAYS = [];
+let currentDayKey = null;
+let historyDayKey = null;
+let historyMode = 'sessions';
+let editingSessionIndex = null;
+let dayDataCache = {}; // dayKey -> { history:[...], last:{...}, prs:{...} }
+let videoStore = {};
+let editMode = false;
+let weightUnit = 'kg'; // 'kg' | 'lb'
+let exerciseTimers = {}; // exId -> { elapsed:sec, running:bool, startTime:ms|null, interval:id|null }
+let pendingConfirmAction = null;
+let nutritionDate = new Date();
+const KG_TO_LB = 2.20462;
+
+/* ---------------- plan overrides (edit mode) ---------------- */
+
+async function loadOverrides(){
+  let overrides = {};
+  try {
+    const res = await window.storage.get('day-overrides', false);
+    if (res && res.value) overrides = JSON.parse(res.value);
+  } catch (e) {
+    // no overrides saved yet
+  }
+  return overrides;
+}
+
+function buildDays(overrides){
+  return DEFAULT_DAYS.map(d => {
+    const ov = overrides[d.key];
+    return {
+      key: d.key, order: d.order, label: d.label, muscles: d.muscles,
+      setsCount: (ov && ov.setsCount) ? ov.setsCount : 3,
+      exercises: (ov && ov.exercises) ? ov.exercises.map(e => ({...e})) : d.exercises.map(e => ({...e}))
+    };
+  });
+}
+
+async function saveOverrides(){
+  const overrides = {};
+  DAYS.forEach(d => {
+    overrides[d.key] = { setsCount: d.setsCount, exercises: d.exercises };
+  });
+  try {
+    await window.storage.set('day-overrides', JSON.stringify(overrides), false);
+  } catch (e) {
+    showToast('שמירת התוכנית נכשלה');
+  }
+}
+
+/* ---------------- unit conversion ---------------- */
+
+function kgToDisplayUnit(kgVal){
+  if (kgVal === null || kgVal === undefined || kgVal === '') return null;
+  if (weightUnit === 'lb') return Math.round(kgVal * KG_TO_LB * 10) / 10;
+  return kgVal;
+}
+function displayUnitToKg(val){
+  if (val === null || val === undefined || val === '') return null;
+  if (weightUnit === 'lb') return Math.round((val / KG_TO_LB) * 10) / 10;
+  return val;
+}
+function unitLabel(){
+  return weightUnit === 'kg' ? 'ק"ג' : 'lb';
+}
+function formatWeight(kgVal){
+  if (kgVal === null || kgVal === undefined) return '-';
+  return `${kgToDisplayUnit(kgVal)} ${unitLabel()}`;
+}
+
+/* ---------------- helpers ---------------- */
+
+function pickDefaultDay(){
+  const jsDay = new Date().getDay();
+  const map = { 0: 'sunday', 1: 'monday', 2: 'tuesday' };
+  return map[jsDay] || 'sunday';
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function normalizeExRecord(rec){
+  if (!rec) return null;
+  if (Array.isArray(rec)) return { sets: rec, note: '' };
+  return rec;
+}
+
+function hasSetData(s){
+  return !!s && ((s.reps !== null && s.reps !== undefined) || (s.weight !== null && s.weight !== undefined));
+}
+
+async function loadDayData(dayKey){
+  if (dayDataCache[dayKey]) return dayDataCache[dayKey];
+  let data = { history: [], last: null, prs: {} };
+  try {
+    const res = await window.storage.get('day-data:' + dayKey, false);
+    if (res && res.value) data = JSON.parse(res.value);
+    if (!data.prs) data.prs = {};
+  } catch (e) {
+    // key not found or storage unavailable — start fresh
+  }
+  dayDataCache[dayKey] = data;
+  return data;
+}
+
+async function saveDayData(dayKey, data){
+  dayDataCache[dayKey] = data;
+  try {
+    const result = await window.storage.set('day-data:' + dayKey, JSON.stringify(data), false);
+    return !!result;
+  } catch (e) {
+    return false;
+  }
+}
+
+/* ---------------- rendering: day tabs + exercises ---------------- */
+
+function renderTabs(){
+  const wrap = document.getElementById('dayTabs');
+  wrap.innerHTML = '';
+  DAYS.forEach(day => {
+    const btn = document.createElement('div');
+    btn.className = 'day-btn' + (day.key === currentDayKey ? ' active' : '');
+    btn.innerHTML = `<span class="num">${day.order}</span><span class="name">יום ${day.label}</span>`;
+    btn.onclick = () => selectDay(day.key);
+    wrap.appendChild(btn);
+  });
+}
+
+function formatLastNote(lastForExercise){
+  if (!lastForExercise || !lastForExercise.sets || !lastForExercise.sets.length) return 'עדיין אין נתונים קודמים';
+  const parts = lastForExercise.sets
+    .filter(s => hasSetData(s))
+    .map(s => `${s.warmup ? 'ח· ' : ''}${s.reps ?? '-'}×${formatWeight(s.weight)}`);
+  if (!parts.length) return 'עדיין אין נתונים קודמים';
+  return 'לאחרונה: ' + parts.join('  ·  ');
+}
+
+function computeLiveVolume(){
+  const day = DAYS.find(d => d.key === currentDayKey);
+  if (!day) return 0;
+  let vol = 0;
+  day.exercises.forEach(ex => {
+    for (let i = 1; i <= day.setsCount; i++){
+      const repsInput = document.querySelector(`input[data-ex="${ex.id}"][data-set="${i}"][data-field="reps"]`);
+      const weightInput = document.querySelector(`input[data-ex="${ex.id}"][data-set="${i}"][data-field="weight"]`);
+      if (!repsInput || !weightInput) continue;
+      const reps = repsInput.value ? Number(repsInput.value) : null;
+      const weight = weightInput.value ? Number(weightInput.value) : null;
+      const warmup = isSetWarmup(ex.id, i);
+      if (!warmup && reps && weight) vol += reps * weight;
+    }
+  });
+  return Math.round(vol);
+}
+
+function updateLiveVolumeDisplay(){
+  const el = document.getElementById('liveVolume');
+  if (!el) return;
+  const vol = computeLiveVolume();
+  el.textContent = vol > 0 ? `נפח האימון עד כה: ${vol} ${unitLabel()}` : '';
+}
+
+async function renderExercises(){
+  const day = DAYS.find(d => d.key === currentDayKey);
+  document.getElementById('daySubtitle').textContent = `יום ${day.label}`;
+  document.getElementById('dayMuscles').textContent = day.muscles;
+
+  const data = await loadDayData(currentDayKey);
+  const list = document.getElementById('exerciseList');
+  list.innerHTML = '';
+  videoStore = {};
+
+  day.exercises.forEach(ex => {
+    const lastForEx = normalizeExRecord(data.last ? data.last[ex.id] : null);
+    const pr = data.prs ? data.prs[ex.id] : null;
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.setAttribute('data-ex-card', ex.id);
+
+    let rows = '';
+    for (let i = 1; i <= day.setsCount; i++){
+      const lastSet = lastForEx && lastForEx.sets[i - 1] ? lastForEx.sets[i - 1] : null;
+      const weightPlaceholder = lastSet && lastSet.weight !== null && lastSet.weight !== undefined ? kgToDisplayUnit(lastSet.weight) : '';
+      rows += `
+        <tr>
+          <td><button class="set-idx-btn" data-ex="${ex.id}" data-set="${i}" title="לחיצה = סימון כחימום">${i}</button></td>
+          <td><input type="number" inputmode="numeric" min="0" placeholder="${lastSet ? (lastSet.reps ?? '') : ''}" data-ex="${ex.id}" data-set="${i}" data-field="reps"></td>
+          <td><input type="number" inputmode="decimal" min="0" step="0.5" placeholder="${weightPlaceholder}" data-ex="${ex.id}" data-set="${i}" data-field="weight"></td>
+          <td><button class="set-save-btn" data-ex="${ex.id}" data-set="${i}" data-exname="${ex.name}" title="שמור סט">✓</button></td>
+        </tr>`;
+    }
+
+    card.innerHTML = `
+      <div class="card-head">
+        <div class="ex-name">${ex.name}</div>
+        <div class="card-head-actions">
+          <button class="icon-btn" data-action="chart" data-ex="${ex.id}" data-exname="${ex.name}" title="התקדמות">📈</button>
+          ${editMode ? `
+            <button class="icon-btn" data-action="up" data-ex="${ex.id}" title="הזז למעלה">▲</button>
+            <button class="icon-btn" data-action="down" data-ex="${ex.id}" title="הזז למטה">▼</button>
+            <button class="icon-btn danger" data-action="del" data-ex="${ex.id}" title="הסר תרגיל">🗑</button>
+          ` : ''}
+        </div>
+      </div>
+      <div class="ex-stopwatch-row">
+        <span class="ex-stopwatch-display" id="exswdisplay-${ex.id}">00:00</span>
+        <button class="icon-btn ex-stopwatch-btn" id="exswbtn-${ex.id}" data-ex="${ex.id}" title="סטופר לתרגיל">▶</button>
+        <button class="icon-btn ex-stopwatch-reset" data-ex="${ex.id}" title="איפוס סטופר">↺</button>
+      </div>
+      <div class="last-note">${formatLastNote(lastForEx)}${pr ? ` · שיא אישי: ${pr.reps ?? '-'}×${formatWeight(pr.weight)} 🏆` : ''}</div>
+      <table class="sets">
+        <thead>
+          <tr><th style="width:34px;">סט</th><th>חזרות</th><th>משקל (${unitLabel()})</th><th style="width:44px;"></th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <textarea class="ex-note" data-ex="${ex.id}" rows="1" placeholder="${lastForEx && lastForEx.note ? lastForEx.note : 'הערות לתרגיל (אופציונלי)'}"></textarea>
+      <div class="video-row">
+        <label class="video-btn" id="vbtn-${ex.id}">
+          🎥 <span id="vlabel-${ex.id}">צילום תרגיל</span>
+          <input type="file" accept="video/*" capture="environment" style="display:none" data-video-for="${ex.id}">
+        </label>
+        <video class="preview" id="vpreview-${ex.id}" style="display:none" controls></video>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+
+  // video inputs
+  list.querySelectorAll('input[type=file][data-video-for]').forEach(input => {
+    input.addEventListener('change', (e) => {
+      const exId = e.target.getAttribute('data-video-for');
+      const file = e.target.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      videoStore[exId] = url;
+      const preview = document.getElementById('vpreview-' + exId);
+      preview.src = url;
+      preview.style.display = 'block';
+      document.getElementById('vbtn-' + exId).classList.add('has-video');
+      document.getElementById('vlabel-' + exId).textContent = 'סרטון צולם ✓';
+    });
+  });
+
+  // per-set save
+  list.querySelectorAll('.set-save-btn').forEach(btn => {
+    btn.addEventListener('click', () => saveIndividualSet(btn));
+  });
+
+  // editing reps/weight after a set was saved invalidates its checkmark
+  list.querySelectorAll('input[data-field]').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const exId = inp.getAttribute('data-ex');
+      const setIdx = inp.getAttribute('data-set');
+      const saveBtn = list.querySelector(`.set-save-btn[data-ex="${exId}"][data-set="${setIdx}"]`);
+      if (saveBtn) saveBtn.classList.remove('saved');
+      updateLiveVolumeDisplay();
+    });
+  });
+
+  // warmup toggles (also invalidates the checkmark, since warmup affects the saved data)
+  list.querySelectorAll('.set-idx-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('warmup');
+      const exId = btn.getAttribute('data-ex');
+      const setIdx = btn.getAttribute('data-set');
+      const saveBtn = list.querySelector(`.set-save-btn[data-ex="${exId}"][data-set="${setIdx}"]`);
+      if (saveBtn) saveBtn.classList.remove('saved');
+      updateLiveVolumeDisplay();
+    });
+  });
+
+  // per-exercise stopwatch buttons
+  list.querySelectorAll('.ex-stopwatch-btn').forEach(btn => {
+    const exId = btn.getAttribute('data-ex');
+    btn.addEventListener('click', () => toggleExerciseStopwatch(exId));
+  });
+  list.querySelectorAll('.ex-stopwatch-reset').forEach(btn => {
+    const exId = btn.getAttribute('data-ex');
+    btn.addEventListener('click', () => resetExerciseStopwatch(exId));
+  });
+
+  // card-head action buttons (chart + edit controls)
+  list.querySelectorAll('.icon-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const action = btn.getAttribute('data-action');
+      const exId = btn.getAttribute('data-ex');
+      if (action === 'chart') openChart(exId, btn.getAttribute('data-exname'));
+      else if (action === 'up') moveExercise(currentDayKey, exId, -1);
+      else if (action === 'down') moveExercise(currentDayKey, exId, 1);
+      else if (action === 'del') removeExercise(currentDayKey, exId);
+    });
+  });
+
+  // restore/refresh per-exercise stopwatch displays after (re)render
+  day.exercises.forEach(ex => {
+    const t = getExTimer(ex.id);
+    if (t.running){
+      clearInterval(t.interval);
+      t.interval = setInterval(() => updateExTimerDisplay(ex.id), 1000);
+    }
+    updateExTimerDisplay(ex.id);
+  });
+
+  updateLiveVolumeDisplay();
+
+  if (editMode){
+    const editPanel = document.createElement('div');
+    editPanel.className = 'card';
+    editPanel.innerHTML = `
+      <div class="edit-panel-title">הגדרות יום ${day.label}</div>
+      <div class="sets-stepper">
+        <span style="color:var(--muted);font-size:13px;">מספר סטים לתרגיל:</span>
+        <button class="icon-btn" id="setsMinusBtn">−</button>
+        <span class="val">${day.setsCount}</span>
+        <button class="icon-btn" id="setsPlusBtn">+</button>
+      </div>
+      <div class="add-ex-row">
+        <input type="text" id="newExInput" placeholder="שם תרגיל חדש">
+        <button class="reset-btn" id="addExBtn" style="flex:none;">+ הוסף</button>
+      </div>
+    `;
+    list.appendChild(editPanel);
+    document.getElementById('setsMinusBtn').addEventListener('click', () => changeSetsCount(currentDayKey, -1));
+    document.getElementById('setsPlusBtn').addEventListener('click', () => changeSetsCount(currentDayKey, 1));
+    document.getElementById('addExBtn').addEventListener('click', () => {
+      const input = document.getElementById('newExInput');
+      addExercise(currentDayKey, input.value);
+    });
+  }
+}
+
+function selectDay(key){
+  currentDayKey = key;
+  renderTabs();
+  renderExercises();
+}
+
+/* ---------------- edit mode actions ---------------- */
+
+function toggleEditMode(){
+  editMode = !editMode;
+  const btn = document.getElementById('editBtn');
+  btn.classList.toggle('active', editMode);
+  btn.textContent = editMode ? '✔ סיום עריכה' : '✏️ ערוך תוכנית';
+  renderExercises();
+}
+
+async function removeExercise(dayKey, exId){
+  const day = DAYS.find(d => d.key === dayKey);
+  if (day.exercises.length <= 1){
+    showToast('חייב להישאר לפחות תרגיל אחד ביום');
+    return;
+  }
+  day.exercises = day.exercises.filter(e => e.id !== exId);
+  await saveOverrides();
+  renderExercises();
+}
+
+async function moveExercise(dayKey, exId, dir){
+  const day = DAYS.find(d => d.key === dayKey);
+  const idx = day.exercises.findIndex(e => e.id === exId);
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= day.exercises.length) return;
+  const tmp = day.exercises[idx];
+  day.exercises[idx] = day.exercises[newIdx];
+  day.exercises[newIdx] = tmp;
+  await saveOverrides();
+  renderExercises();
+}
+
+async function addExercise(dayKey, name){
+  if (!name || !name.trim()){
+    showToast('הכנס שם תרגיל');
+    return;
+  }
+  const day = DAYS.find(d => d.key === dayKey);
+  const id = 'custom_' + Date.now();
+  day.exercises.push({ id, name: name.trim() });
+  await saveOverrides();
+  renderExercises();
+  showToast('התרגיל נוסף ✓');
+}
+
+async function changeSetsCount(dayKey, delta){
+  const day = DAYS.find(d => d.key === dayKey);
+  day.setsCount = Math.min(8, Math.max(1, day.setsCount + delta));
+  await saveOverrides();
+  renderExercises();
+}
+
+document.getElementById('editBtn').addEventListener('click', toggleEditMode);
+document.getElementById('unitBtn').addEventListener('click', () => {
+  weightUnit = weightUnit === 'kg' ? 'lb' : 'kg';
+  document.getElementById('unitBtn').textContent = unitLabel();
+  renderExercises();
+});
+
+/* ---------------- clear form (with confirmation) ---------------- */
+
+function clearForm(){
+  document.querySelectorAll('#exerciseList input[type=number]').forEach(inp => inp.value = '');
+  document.querySelectorAll('#exerciseList input[type=file]').forEach(inp => inp.value = '');
+  document.querySelectorAll('#exerciseList video.preview').forEach(v => { v.style.display = 'none'; v.src = ''; });
+  document.querySelectorAll('.video-btn').forEach(b => b.classList.remove('has-video'));
+  document.querySelectorAll('[id^=vlabel-]').forEach(l => l.textContent = 'צילום תרגיל');
+  document.querySelectorAll('.set-save-btn').forEach(b => b.classList.remove('saved'));
+  document.querySelectorAll('.set-idx-btn').forEach(b => b.classList.remove('warmup'));
+  document.querySelectorAll('.ex-note').forEach(t => t.value = '');
+  Object.keys(exerciseTimers).forEach(exId => resetExerciseStopwatch(exId));
+  videoStore = {};
+  updateLiveVolumeDisplay();
+}
+
+function showConfirm(title, message, onConfirm, confirmLabel){
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMessage').textContent = message;
+  document.getElementById('confirmOkBtn').textContent = confirmLabel || 'אישור';
+  pendingConfirmAction = onConfirm;
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  showConfirm(
+    'לנקות את הטופס?',
+    'כל הנתונים שהוזנו בטופס הנוכחי (שלא נשמרו) יימחקו ולא ניתן יהיה לשחזר אותם.',
+    () => {
+      clearForm();
+      showToast('הטופס נוקה');
+      resetWorkoutClock();
+      startWorkoutClock();
+    },
+    'נקה בכל זאת'
+  );
+});
+document.getElementById('confirmCancelBtn').addEventListener('click', () => {
+  pendingConfirmAction = null;
+  document.getElementById('confirmOverlay').classList.remove('open');
+});
+document.getElementById('confirmOkBtn').addEventListener('click', () => {
+  document.getElementById('confirmOverlay').classList.remove('open');
+  if (typeof pendingConfirmAction === 'function'){
+    const action = pendingConfirmAction;
+    pendingConfirmAction = null;
+    action();
+  }
+});
+document.getElementById('confirmOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'confirmOverlay'){
+    pendingConfirmAction = null;
+    document.getElementById('confirmOverlay').classList.remove('open');
+  }
+});
+
+/* ---------------- save full workout ---------------- */
+
+function isSetWarmup(exId, setIdx){
+  const btn = document.querySelector(`.set-idx-btn[data-ex="${exId}"][data-set="${setIdx}"]`);
+  return !!(btn && btn.classList.contains('warmup'));
+}
+
+async function saveWorkout(){
+  const day = DAYS.find(d => d.key === currentDayKey);
+  const exercisesData = {};
+  let anyFilled = false;
+
+  day.exercises.forEach(ex => {
+    const sets = [];
+    for (let i = 1; i <= day.setsCount; i++){
+      const repsInput = document.querySelector(`input[data-ex="${ex.id}"][data-set="${i}"][data-field="reps"]`);
+      const weightInput = document.querySelector(`input[data-ex="${ex.id}"][data-set="${i}"][data-field="weight"]`);
+      const reps = repsInput.value ? Number(repsInput.value) : null;
+      const weightDisplay = weightInput.value ? Number(weightInput.value) : null;
+      const weight = weightDisplay !== null ? displayUnitToKg(weightDisplay) : null;
+      const warmup = isSetWarmup(ex.id, i);
+      if (reps !== null || weight !== null) anyFilled = true;
+      sets.push({ reps, weight, warmup });
+    }
+    const noteInput = document.querySelector(`.ex-note[data-ex="${ex.id}"]`);
+    exercisesData[ex.id] = { sets, note: noteInput ? noteInput.value.trim() : '' };
+  });
+
+  if (!anyFilled){
+    showToast('לא הוזנו נתונים לשמירה');
+    return;
+  }
+
+  const data = await loadDayData(currentDayKey);
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('he-IL');
+
+  // personal record check (non-warmup sets only)
+  data.prs = data.prs || {};
+  const newPRs = [];
+  day.exercises.forEach(ex => {
+    let maxW = null, maxWReps = null;
+    exercisesData[ex.id].sets.forEach(set => {
+      if (!set.warmup && set.weight !== null && set.weight !== undefined){
+        if (maxW === null || set.weight > maxW){ maxW = set.weight; maxWReps = set.reps; }
+      }
+    });
+    if (maxW !== null){
+      const current = data.prs[ex.id];
+      if (!current || maxW > current.weight){
+        data.prs[ex.id] = { weight: maxW, reps: maxWReps, date: dateStr };
+        newPRs.push(ex.name);
+      }
+    }
+  });
+
+  const session = { date: dateStr, exercises: exercisesData };
+  data.history = data.history || [];
+  data.history.unshift(session);
+  data.history = data.history.slice(0, 12);
+  data.last = exercisesData;
+
+  const ok = await saveDayData(currentDayKey, data);
+  if (ok){
+    if (newPRs.length) showToast('🏆 שיא אישי חדש: ' + newPRs.join(', '));
+    else showToast('האימון נשמר ✓');
+    renderExercises();
+    resetWorkoutClock();
+    startWorkoutClock();
+  } else {
+    showToast('שמירה נכשלה, נסה שוב');
+  }
+}
+
+document.getElementById('saveBtn').addEventListener('click', saveWorkout);
+
+/* ---------------- per-set save ---------------- */
+
+async function updatePRIfNeeded(dayKey, exId, weightKg, reps, dateStr){
+  const data = await loadDayData(dayKey);
+  data.prs = data.prs || {};
+  const current = data.prs[exId];
+  if (weightKg !== null && weightKg !== undefined && (!current || weightKg > current.weight)){
+    data.prs[exId] = { weight: weightKg, reps: reps, date: dateStr };
+    await saveDayData(dayKey, data);
+    return true;
+  }
+  return false;
+}
+
+async function persistSetToLast(exId, setIdx, reps, weight, warmup){
+  const data = await loadDayData(currentDayKey);
+  const day = DAYS.find(d => d.key === currentDayKey);
+  if (!data.last) data.last = {};
+  let rec = normalizeExRecord(data.last[exId]);
+  if (!rec) rec = { sets: [], note: '' };
+  while (rec.sets.length < day.setsCount) rec.sets.push({ reps: null, weight: null, warmup: false });
+  rec.sets[setIdx - 1] = { reps, weight, warmup };
+  data.last[exId] = rec;
+  await saveDayData(currentDayKey, data);
+  return rec;
+}
+
+function updateLastNoteDisplay(exId, rec){
+  const data = dayDataCache[currentDayKey];
+  const pr = data && data.prs ? data.prs[exId] : null;
+  const card = document.querySelector(`.card[data-ex-card="${exId}"]`);
+  if (!card) return;
+  const noteDiv = card.querySelector('.last-note');
+  if (noteDiv) noteDiv.textContent = formatLastNote(rec) + (pr ? ` · שיא אישי: ${pr.reps ?? '-'}×${formatWeight(pr.weight)} 🏆` : '');
+}
+
+async function saveIndividualSet(btn){
+  const exId = btn.getAttribute('data-ex');
+  const setIdx = btn.getAttribute('data-set');
+  const exName = btn.getAttribute('data-exname');
+  const repsInput = document.querySelector(`input[data-ex="${exId}"][data-set="${setIdx}"][data-field="reps"]`);
+  const weightInput = document.querySelector(`input[data-ex="${exId}"][data-set="${setIdx}"][data-field="weight"]`);
+  const reps = repsInput.value ? Number(repsInput.value) : null;
+  const weightDisplay = weightInput.value ? Number(weightInput.value) : null;
+  const weight = weightDisplay !== null ? displayUnitToKg(weightDisplay) : null;
+  const warmup = isSetWarmup(exId, setIdx);
+
+  if (reps === null && weight === null){
+    showToast('הכנס חזרות או משקל לפני שמירה');
+    return;
+  }
+
+  const key = 'set-log:' + currentDayKey;
+  let log = [];
+  try {
+    const res = await window.storage.get(key, false);
+    if (res && res.value) log = JSON.parse(res.value);
+  } catch (e) {
+    // no log yet
+  }
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('he-IL');
+  log.unshift({
+    date: dateStr,
+    time: now.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
+    exerciseId: exId,
+    exerciseName: exName,
+    setIndex: Number(setIdx),
+    reps, weight, warmup
+  });
+  log = log.slice(0, 300);
+
+  try {
+    const ok = await window.storage.set(key, JSON.stringify(log), false);
+    if (ok){
+      btn.classList.add('saved');
+      let isPR = false;
+      if (!warmup) isPR = await updatePRIfNeeded(currentDayKey, exId, weight, reps, dateStr);
+      const rec = await persistSetToLast(exId, setIdx, reps, weight, warmup);
+      updateLastNoteDisplay(exId, rec);
+      showToast(isPR ? '🏆 שיא אישי חדש!' : 'הסט נשמר ✓');
+      if (!timerRunning) startTimer(selectedPreset);
+    } else {
+      showToast('שמירת הסט נכשלה');
+    }
+  } catch (e) {
+    showToast('שמירת הסט נכשלה');
+  }
+}
+
+/* ---------------- workout stopwatch ---------------- */
+
+let workoutStartTime = null;
+let workoutElapsedInterval = null;
+let workoutAccumulated = 0; // seconds banked from before the current running segment
+let workoutRunning = false;
+
+function updateWorkoutElapsed(){
+  const liveSeconds = (workoutRunning && workoutStartTime) ? Math.floor((Date.now() - workoutStartTime) / 1000) : 0;
+  const diff = workoutAccumulated + liveSeconds;
+  const h = Math.floor(diff / 3600).toString().padStart(2, '0');
+  const m = Math.floor((diff % 3600) / 60).toString().padStart(2, '0');
+  const s = Math.floor(diff % 60).toString().padStart(2, '0');
+  document.getElementById('workoutElapsed').textContent = `⏳ ${h}:${m}:${s}`;
+}
+
+function updateWorkoutPauseUi(){
+  const btn = document.getElementById('workoutPauseBtn');
+  const wrap = document.getElementById('workoutClockWrap');
+  if (!btn) return;
+  btn.textContent = workoutRunning ? '⏸' : '▶';
+  btn.title = workoutRunning ? 'עצור זמן אימון' : 'המשך זמן אימון';
+  wrap.classList.toggle('paused', !workoutRunning);
+}
+
+function startWorkoutClock(){
+  workoutAccumulated = 0;
+  workoutRunning = true;
+  workoutStartTime = Date.now();
+  clearInterval(workoutElapsedInterval);
+  workoutElapsedInterval = setInterval(updateWorkoutElapsed, 1000);
+  updateWorkoutElapsed();
+  updateWorkoutPauseUi();
+}
+
+function pauseWorkoutClock(){
+  if (!workoutRunning) return;
+  workoutAccumulated += Math.floor((Date.now() - workoutStartTime) / 1000);
+  workoutRunning = false;
+  clearInterval(workoutElapsedInterval);
+  updateWorkoutElapsed();
+  updateWorkoutPauseUi();
+}
+
+function resumeWorkoutClock(){
+  if (workoutRunning) return;
+  workoutStartTime = Date.now();
+  workoutRunning = true;
+  clearInterval(workoutElapsedInterval);
+  workoutElapsedInterval = setInterval(updateWorkoutElapsed, 1000);
+  updateWorkoutElapsed();
+  updateWorkoutPauseUi();
+}
+
+function resetWorkoutClock(){
+  clearInterval(workoutElapsedInterval);
+  workoutStartTime = null;
+  workoutAccumulated = 0;
+  workoutRunning = false;
+  document.getElementById('workoutElapsed').textContent = '⏳ 00:00:00';
+  updateWorkoutPauseUi();
+}
+
+document.getElementById('workoutPauseBtn').addEventListener('click', () => {
+  if (workoutRunning) pauseWorkoutClock();
+  else resumeWorkoutClock();
+});
+
+/* ---------------- per-exercise stopwatch ---------------- */
+
+function getExTimer(exId){
+  if (!exerciseTimers[exId]) exerciseTimers[exId] = { elapsed: 0, running: false, startTime: null, interval: null };
+  return exerciseTimers[exId];
+}
+
+function formatStopwatch(sec){
+  const m = Math.floor(sec / 60).toString().padStart(2, '0');
+  const s = Math.floor(sec % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function updateExTimerDisplay(exId){
+  const t = getExTimer(exId);
+  const liveSeconds = (t.running && t.startTime) ? Math.floor((Date.now() - t.startTime) / 1000) : 0;
+  const total = t.elapsed + liveSeconds;
+  const disp = document.getElementById('exswdisplay-' + exId);
+  if (disp) disp.textContent = formatStopwatch(total);
+  const btn = document.getElementById('exswbtn-' + exId);
+  if (btn){
+    btn.textContent = t.running ? '⏸' : '▶';
+    btn.classList.toggle('running', t.running);
+  }
+}
+
+function toggleExerciseStopwatch(exId){
+  const t = getExTimer(exId);
+  if (t.running){
+    t.elapsed += Math.floor((Date.now() - t.startTime) / 1000);
+    t.running = false;
+    t.startTime = null;
+    clearInterval(t.interval);
+    t.interval = null;
+  } else {
+    t.running = true;
+    t.startTime = Date.now();
+    clearInterval(t.interval);
+    t.interval = setInterval(() => updateExTimerDisplay(exId), 1000);
+  }
+  updateExTimerDisplay(exId);
+}
+
+function resetExerciseStopwatch(exId){
+  const t = getExTimer(exId);
+  clearInterval(t.interval);
+  exerciseTimers[exId] = { elapsed: 0, running: false, startTime: null, interval: null };
+  updateExTimerDisplay(exId);
+}
+
+/* ---------------- rest timer ---------------- */
+
+let timerRemaining = 90;
+let timerInterval = null;
+let timerRunning = false;
+let selectedPreset = 90;
+
+function formatTime(sec){
+  const m = Math.floor(sec / 60).toString().padStart(2, '0');
+  const s = Math.floor(sec % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function updateTimerDisplay(){
+  document.getElementById('timerDisplay').textContent = formatTime(timerRemaining);
+  const fabLabel = document.getElementById('timerFabLabel');
+  const fab = document.getElementById('timerFab');
+  if (timerRunning || (timerRemaining > 0 && timerRemaining !== selectedPreset)){
+    fabLabel.textContent = formatTime(timerRemaining);
+    fab.classList.add('timer-active');
+  } else {
+    fabLabel.textContent = 'מנוחה';
+    fab.classList.remove('timer-active');
+  }
+}
+
+function playBeep(){
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.55);
+  } catch (e) {
+    // audio not available
+  }
+  if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+}
+
+function startTimer(seconds){
+  if (typeof seconds === 'number' && seconds > 0) timerRemaining = seconds;
+  if (timerRemaining <= 0) timerRemaining = selectedPreset;
+  timerRunning = true;
+  const startBtn = document.getElementById('timerStartBtn');
+  startBtn.textContent = 'השהה';
+  startBtn.classList.add('is-paused');
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timerRemaining--;
+    if (timerRemaining <= 0){
+      timerRemaining = 0;
+      clearInterval(timerInterval);
+      timerRunning = false;
+      startBtn.textContent = 'התחל';
+      startBtn.classList.remove('is-paused');
+      playBeep();
+      showToast('זמן המנוחה נגמר ⏱');
+    }
+    updateTimerDisplay();
+  }, 1000);
+  updateTimerDisplay();
+}
+
+function pauseTimer(){
+  clearInterval(timerInterval);
+  timerRunning = false;
+  const startBtn = document.getElementById('timerStartBtn');
+  startBtn.textContent = 'המשך';
+  startBtn.classList.remove('is-paused');
+  updateTimerDisplay();
+}
+
+function resetTimer(){
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerRemaining = selectedPreset;
+  const startBtn = document.getElementById('timerStartBtn');
+  startBtn.textContent = 'התחל';
+  startBtn.classList.remove('is-paused');
+  updateTimerDisplay();
+}
+
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedPreset = Number(btn.getAttribute('data-preset'));
+    if (!timerRunning){
+      timerRemaining = selectedPreset;
+      updateTimerDisplay();
+    }
+  });
+});
+
+document.getElementById('timerStartBtn').addEventListener('click', () => {
+  if (timerRunning) pauseTimer();
+  else startTimer(timerRemaining > 0 ? timerRemaining : selectedPreset);
+});
+document.getElementById('timerResetBtn').addEventListener('click', resetTimer);
+
+document.getElementById('timerFab').addEventListener('click', () => {
+  document.getElementById('timerOverlay').classList.add('open');
+});
+document.getElementById('timerCloseBtn').addEventListener('click', () => {
+  document.getElementById('timerOverlay').classList.remove('open');
+});
+document.getElementById('timerOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'timerOverlay') document.getElementById('timerOverlay').classList.remove('open');
+});
+
+updateTimerDisplay();
+
+/* ---------------- music player ---------------- */
+
+let playlist = [];
+let currentTrackIndex = -1;
+const audioEl = new Audio();
+audioEl.addEventListener('ended', () => nextTrack());
+audioEl.addEventListener('pause', () => updateMusicUi());
+audioEl.addEventListener('play', () => updateMusicUi());
+
+function renderPlaylist(){
+  const wrap = document.getElementById('musicPlaylist');
+  wrap.innerHTML = '';
+  playlist.forEach((track, idx) => {
+    const item = document.createElement('div');
+    item.className = 'music-track' + (idx === currentTrackIndex ? ' active' : '');
+    item.innerHTML = `<span class="music-track-name">${track.name}</span>`;
+    item.addEventListener('click', () => playTrack(idx));
+    wrap.appendChild(item);
+  });
+}
+
+function playTrack(idx){
+  if (!playlist[idx]) return;
+  currentTrackIndex = idx;
+  audioEl.src = playlist[idx].url;
+  audioEl.play();
+  document.getElementById('musicNowPlaying').textContent = playlist[idx].name;
+  renderPlaylist();
+}
+
+function togglePlay(){
+  if (!playlist.length){
+    showToast('בחר שירים קודם');
+    return;
+  }
+  if (currentTrackIndex === -1){
+    playTrack(0);
+    return;
+  }
+  if (audioEl.paused) audioEl.play();
+  else audioEl.pause();
+}
+
+function nextTrack(){
+  if (!playlist.length) return;
+  playTrack((currentTrackIndex + 1) % playlist.length);
+}
+function prevTrack(){
+  if (!playlist.length) return;
+  playTrack((currentTrackIndex - 1 + playlist.length) % playlist.length);
+}
+
+function updateMusicUi(){
+  const fab = document.getElementById('musicFab');
+  const playBtn = document.getElementById('musicPlayBtn');
+  if (!audioEl.paused && currentTrackIndex !== -1){
+    fab.classList.add('music-active');
+    playBtn.textContent = '⏸ השהה';
+  } else {
+    fab.classList.remove('music-active');
+    playBtn.textContent = '▶ נגן';
+  }
+}
+
+document.getElementById('musicFileInput').addEventListener('change', (e) => {
+  const files = Array.from(e.target.files || []);
+  files.forEach(file => {
+    playlist.push({ name: file.name.replace(/\.[^/.]+$/, ''), url: URL.createObjectURL(file) });
+  });
+  renderPlaylist();
+  if (currentTrackIndex === -1 && playlist.length){
+    document.getElementById('musicNowPlaying').textContent = 'נבחרו ' + playlist.length + ' שירים · בחר שיר לניגון';
+  }
+});
+
+document.getElementById('musicPlayBtn').addEventListener('click', togglePlay);
+document.getElementById('musicNextBtn').addEventListener('click', nextTrack);
+document.getElementById('musicPrevBtn').addEventListener('click', prevTrack);
+
+document.getElementById('musicFab').addEventListener('click', () => {
+  document.getElementById('musicOverlay').classList.add('open');
+});
+document.getElementById('musicCloseBtn').addEventListener('click', () => {
+  document.getElementById('musicOverlay').classList.remove('open');
+});
+document.getElementById('musicOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'musicOverlay') document.getElementById('musicOverlay').classList.remove('open');
+});
+
+/* ---------------- progress chart ---------------- */
+
+function buildLineChartSvg(labels, values){
+  const w = 300, h = 170, padX = 26, padY = 22;
+  const knownValues = values.filter(v => v !== null && v !== undefined);
+  const maxV = Math.max(...knownValues, 1);
+  const n = values.length;
+  const stepX = n > 1 ? (w - padX * 2) / (n - 1) : 0;
+  const scaleY = v => h - padY - (v / (maxV || 1)) * (h - padY * 2);
+
+  let points = '';
+  let extras = '';
+  values.forEach((v, i) => {
+    const x = padX + i * stepX;
+    extras += `<text x="${x}" y="${h - 4}" font-size="9" fill="#8b93a0" text-anchor="middle">${labels[i] || ''}</text>`;
+    if (v === null || v === undefined) return;
+    const y = scaleY(v);
+    points += `${x},${y} `;
+    extras += `<circle cx="${x}" cy="${y}" r="4" fill="#d7ff3f"></circle>`;
+    extras += `<text x="${x}" y="${y - 10}" font-size="10" fill="#eef1e8" text-anchor="middle">${v}</text>`;
+  });
+
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;">
+    <polyline points="${points.trim()}" fill="none" stroke="#d7ff3f" stroke-width="2"></polyline>
+    ${extras}
+  </svg>`;
+}
+
+async function openChart(exId, exName){
+  const data = dayDataCache[currentDayKey] || await loadDayData(currentDayKey);
+  const sessions = (data.history || []).slice(0, 8).reverse();
+
+  document.getElementById('chartTitle').textContent = 'התקדמות · ' + exName;
+  const body = document.getElementById('chartBody');
+
+  if (!sessions.length){
+    body.innerHTML = '<div class="history-empty">אין עדיין מספיק אימונים שמורים להצגת גרף</div>';
+    document.getElementById('chartOverlay').classList.add('open');
+    return;
+  }
+
+  const labels = [];
+  const values = [];
+  sessions.forEach(s => {
+    const rec = normalizeExRecord(s.exercises ? s.exercises[exId] : null);
+    let maxW = null;
+    if (rec && rec.sets){
+      rec.sets.forEach(set => {
+        if (!set.warmup && set.weight !== null && set.weight !== undefined){
+          if (maxW === null || set.weight > maxW) maxW = set.weight;
+        }
+      });
+    }
+    labels.push(s.date ? s.date.split('.').slice(0, 2).join('.') : '');
+    values.push(maxW !== null ? kgToDisplayUnit(maxW) : null);
+  });
+
+  const hasData = values.some(v => v !== null);
+  if (!hasData){
+    body.innerHTML = '<div class="history-empty">אין עדיין מספיק נתונים להצגת גרף</div>';
+  } else {
+    body.innerHTML = buildLineChartSvg(labels, values) +
+      `<div style="color:var(--muted);font-size:12px;margin-top:8px;">משקל מקסימלי בסט עבודה (${unitLabel()}) לפי אימון</div>`;
+  }
+  document.getElementById('chartOverlay').classList.add('open');
+}
+
+document.getElementById('chartCloseBtn').addEventListener('click', () => {
+  document.getElementById('chartOverlay').classList.remove('open');
+});
+document.getElementById('chartOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'chartOverlay') document.getElementById('chartOverlay').classList.remove('open');
+});
+
+/* ---------------- more menu ---------------- */
+
+document.getElementById('moreBtn').addEventListener('click', () => {
+  document.getElementById('moreOverlay').classList.add('open');
+});
+document.getElementById('moreCloseBtn').addEventListener('click', () => {
+  document.getElementById('moreOverlay').classList.remove('open');
+});
+document.getElementById('moreOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'moreOverlay') document.getElementById('moreOverlay').classList.remove('open');
+});
+document.getElementById('openBwBtn').addEventListener('click', () => {
+  document.getElementById('moreOverlay').classList.remove('open');
+  openBodyWeight();
+});
+document.getElementById('openNutBtn').addEventListener('click', () => {
+  document.getElementById('moreOverlay').classList.remove('open');
+  openNutrition();
+});
+document.getElementById('openBackupBtn').addEventListener('click', () => {
+  document.getElementById('moreOverlay').classList.remove('open');
+  document.getElementById('backupOverlay').classList.add('open');
+});
+
+/* ---------------- body weight tracking ---------------- */
+
+async function loadBodyWeightLog(){
+  try {
+    const res = await window.storage.get('bodyweight-log', false);
+    return (res && res.value) ? JSON.parse(res.value) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+async function saveBodyWeightLog(log){
+  try {
+    await window.storage.set('bodyweight-log', JSON.stringify(log), false);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function addBodyWeightEntry(rawVal){
+  if (!rawVal){
+    showToast('הכנס משקל');
+    return;
+  }
+  const weightKg = displayUnitToKg(Number(rawVal));
+  const dateStr = new Date().toLocaleDateString('he-IL');
+  let log = await loadBodyWeightLog();
+  const existingIdx = log.findIndex(e => e.date === dateStr);
+  if (existingIdx !== -1) log[existingIdx].weight = weightKg;
+  else log.unshift({ date: dateStr, weight: weightKg });
+  log = log.slice(0, 60);
+  await saveBodyWeightLog(log);
+  showToast('משקל הגוף נשמר ✓');
+  renderBodyWeightPanel();
+}
+
+async function deleteBodyWeightEntry(idx){
+  let log = await loadBodyWeightLog();
+  log.splice(idx, 1);
+  await saveBodyWeightLog(log);
+  renderBodyWeightPanel();
+}
+
+async function renderBodyWeightPanel(){
+  const log = await loadBodyWeightLog();
+  document.getElementById('bwInput').placeholder = unitLabel();
+  const listWrap = document.getElementById('bwList');
+  const chartWrap = document.getElementById('bwChart');
+
+  if (!log.length){
+    listWrap.innerHTML = '<div class="history-empty">עדיין לא נרשם משקל גוף</div>';
+    chartWrap.innerHTML = '';
+    return;
+  }
+
+  const chronological = [...log].reverse();
+  const labels = chronological.map(e => e.date.split('.').slice(0, 2).join('.'));
+  const values = chronological.map(e => kgToDisplayUnit(e.weight));
+  chartWrap.innerHTML = buildLineChartSvg(labels, values);
+
+  listWrap.innerHTML = '';
+  log.forEach((entry, idx) => {
+    const row = document.createElement('div');
+    row.className = 'set-log-row';
+    row.innerHTML = `
+      <div>
+        <div class="set-log-main">${formatWeight(entry.weight)}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="set-log-time">${entry.date}</div>
+        <button class="icon-btn danger" data-bwdel="${idx}" title="מחק">🗑</button>
+      </div>
+    `;
+    listWrap.appendChild(row);
+  });
+  listWrap.querySelectorAll('[data-bwdel]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const delIdx = Number(btn.getAttribute('data-bwdel'));
+      showConfirm('למחוק רשומת משקל?', 'הרשומה תימחק לצמיתות.', () => deleteBodyWeightEntry(delIdx), 'מחק');
+    });
+  });
+}
+
+function openBodyWeight(){
+  renderBodyWeightPanel();
+  document.getElementById('bodyweightOverlay').classList.add('open');
+}
+
+document.getElementById('bwSaveBtn').addEventListener('click', () => {
+  const input = document.getElementById('bwInput');
+  addBodyWeightEntry(input.value);
+  input.value = '';
+});
+document.getElementById('bwCloseBtn').addEventListener('click', () => {
+  document.getElementById('bodyweightOverlay').classList.remove('open');
+});
+document.getElementById('bodyweightOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'bodyweightOverlay') document.getElementById('bodyweightOverlay').classList.remove('open');
+});
+
+/* ---------------- nutrition log ---------------- */
+
+function isoDate(d){
+  const y = d.getFullYear();
+  const m = (d.getMonth() + 1).toString().padStart(2, '0');
+  const day = d.getDate().toString().padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+function displayDateHe(d){
+  return d.toLocaleDateString('he-IL');
+}
+
+async function loadNutritionGoal(){
+  try {
+    const res = await window.storage.get('nutrition-goal', false);
+    return (res && res.value) ? JSON.parse(res.value) : { calories: null, protein: null, carbs: null, fat: null };
+  } catch (e) {
+    return { calories: null, protein: null, carbs: null, fat: null };
+  }
+}
+
+async function saveNutritionGoal(goal){
+  try {
+    await window.storage.set('nutrition-goal', JSON.stringify(goal), false);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function loadNutritionDay(d){
+  const key = 'nutrition:' + isoDate(d);
+  try {
+    const res = await window.storage.get(key, false);
+    return (res && res.value) ? JSON.parse(res.value) : { entries: [] };
+  } catch (e) {
+    return { entries: [] };
+  }
+}
+
+async function saveNutritionDay(d, data){
+  const key = 'nutrition:' + isoDate(d);
+  try {
+    await window.storage.set(key, JSON.stringify(data), false);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function shiftNutritionDate(delta){
+  nutritionDate = new Date(nutritionDate.getTime() + delta * 86400000);
+  renderNutritionPanel();
+}
+
+async function addNutritionEntry(){
+  const nameInput = document.getElementById('nutNameInput');
+  const calInput = document.getElementById('nutCalInput');
+  const proInput = document.getElementById('nutProInput');
+  const carbInput = document.getElementById('nutCarbInput');
+  const fatInput = document.getElementById('nutFatInput');
+  const name = nameInput.value.trim();
+  if (!name){
+    showToast('הכנס שם למאכל');
+    return;
+  }
+  const entry = {
+    name,
+    calories: calInput.value ? Number(calInput.value) : 0,
+    protein: proInput.value ? Number(proInput.value) : 0,
+    carbs: carbInput.value ? Number(carbInput.value) : 0,
+    fat: fatInput.value ? Number(fatInput.value) : 0,
+    time: new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+  };
+  const data = await loadNutritionDay(nutritionDate);
+  data.entries = data.entries || [];
+  data.entries.push(entry);
+  await saveNutritionDay(nutritionDate, data);
+  nameInput.value = ''; calInput.value = ''; proInput.value = ''; carbInput.value = ''; fatInput.value = '';
+  showToast('נוסף ליומן ✓');
+  renderNutritionPanel();
+}
+
+async function deleteNutritionEntry(idx){
+  const data = await loadNutritionDay(nutritionDate);
+  data.entries.splice(idx, 1);
+  await saveNutritionDay(nutritionDate, data);
+  renderNutritionPanel();
+}
+
+async function saveNutritionGoalFromInputs(){
+  const goal = {
+    calories: document.getElementById('goalCalInput').value ? Number(document.getElementById('goalCalInput').value) : null,
+    protein: document.getElementById('goalProInput').value ? Number(document.getElementById('goalProInput').value) : null,
+    carbs: document.getElementById('goalCarbInput').value ? Number(document.getElementById('goalCarbInput').value) : null,
+    fat: document.getElementById('goalFatInput').value ? Number(document.getElementById('goalFatInput').value) : null,
+  };
+  await saveNutritionGoal(goal);
+  showToast('היעד נשמר ✓');
+  renderNutritionPanel();
+}
+
+async function renderNutritionPanel(){
+  document.getElementById('nutDateLabel').textContent = displayDateHe(nutritionDate);
+  const data = await loadNutritionDay(nutritionDate);
+  const goal = await loadNutritionGoal();
+  const entries = data.entries || [];
+
+  const totals = { calories: 0, protein: 0, carbs: 0, fat: 0 };
+  entries.forEach(e => {
+    totals.calories += Number(e.calories) || 0;
+    totals.protein += Number(e.protein) || 0;
+    totals.carbs += Number(e.carbs) || 0;
+    totals.fat += Number(e.fat) || 0;
+  });
+
+  const fmt = (val, goalVal) => goalVal ? `${Math.round(val)} / ${goalVal}` : `${Math.round(val)}`;
+  document.getElementById('nutTotals').innerHTML = `
+    <div class="nut-total-item"><span class="nut-total-val">${fmt(totals.calories, goal.calories)}</span><span class="nut-total-label">קלוריות</span></div>
+    <div class="nut-total-item"><span class="nut-total-val">${fmt(totals.protein, goal.protein)}</span><span class="nut-total-label">חלבון (ג')</span></div>
+    <div class="nut-total-item"><span class="nut-total-val">${fmt(totals.carbs, goal.carbs)}</span><span class="nut-total-label">פחמימות (ג')</span></div>
+    <div class="nut-total-item"><span class="nut-total-val">${fmt(totals.fat, goal.fat)}</span><span class="nut-total-label">שומן (ג')</span></div>
+  `;
+
+  document.getElementById('goalCalInput').value = goal.calories ?? '';
+  document.getElementById('goalProInput').value = goal.protein ?? '';
+  document.getElementById('goalCarbInput').value = goal.carbs ?? '';
+  document.getElementById('goalFatInput').value = goal.fat ?? '';
+
+  const list = document.getElementById('nutEntryList');
+  if (!entries.length){
+    list.innerHTML = '<div class="history-empty">עדיין לא נרשם אוכל ליום זה</div>';
+    return;
+  }
+  list.innerHTML = '';
+  entries.forEach((e, idx) => {
+    const row = document.createElement('div');
+    row.className = 'set-log-row';
+    row.innerHTML = `
+      <div>
+        <div class="set-log-main">${e.name}</div>
+        <div class="set-log-sub">${e.calories || 0} קל׳ · חל׳ ${e.protein || 0} · פחמ׳ ${e.carbs || 0} · שומן ${e.fat || 0}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="set-log-time">${e.time || ''}</div>
+        <button class="icon-btn danger" data-nutdel="${idx}" title="מחק">🗑</button>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+  list.querySelectorAll('[data-nutdel]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const delIdx = Number(btn.getAttribute('data-nutdel'));
+      showConfirm('למחוק פריט?', 'הפריט יימחק מיומן התזונה.', () => deleteNutritionEntry(delIdx), 'מחק');
+    });
+  });
+}
+
+function openNutrition(){
+  nutritionDate = new Date();
+  renderNutritionPanel();
+  document.getElementById('nutritionOverlay').classList.add('open');
+}
+
+document.getElementById('nutAddBtn').addEventListener('click', addNutritionEntry);
+document.getElementById('goalSaveBtn').addEventListener('click', saveNutritionGoalFromInputs);
+document.getElementById('nutPrevDay').addEventListener('click', () => shiftNutritionDate(-1));
+document.getElementById('nutNextDay').addEventListener('click', () => shiftNutritionDate(1));
+document.getElementById('nutCloseBtn').addEventListener('click', () => {
+  document.getElementById('nutritionOverlay').classList.remove('open');
+});
+document.getElementById('nutritionOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'nutritionOverlay') document.getElementById('nutritionOverlay').classList.remove('open');
+});
+
+/* ---------------- backup: export / import ---------------- */
+
+async function exportAllData(){
+  try {
+    const listRes = await window.storage.list('', false);
+    const keys = (listRes && listRes.keys) ? listRes.keys : [];
+    const bundle = {};
+    for (const k of keys){
+      try {
+        const res = await window.storage.get(k, false);
+        if (res && res.value !== undefined) bundle[k] = res.value;
+      } catch (e) {
+        // skip unreadable key
+      }
+    }
+    const payload = { exportedAt: new Date().toISOString(), data: bundle };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const dateTag = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `workout-backup-${dateTag}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    showToast('הגיבוי הורד בהצלחה ✓');
+  } catch (e) {
+    showToast('הגיבוי נכשל, נסה שוב');
+  }
+}
+
+async function importAllData(file){
+  try {
+    const text = await file.text();
+    const payload = JSON.parse(text);
+    const bundle = (payload && payload.data) ? payload.data : payload;
+    const keys = Object.keys(bundle || {});
+    if (!keys.length){
+      showToast('הקובץ לא מכיל נתונים תקינים');
+      return;
+    }
+    for (const k of keys){
+      await window.storage.set(k, bundle[k], false);
+    }
+    dayDataCache = {};
+    const overrides = await loadOverrides();
+    DAYS = buildDays(overrides);
+    showToast('הנתונים יובאו בהצלחה ✓');
+    renderTabs();
+    renderExercises();
+  } catch (e) {
+    showToast('ייבוא הקובץ נכשל — ודא שזה קובץ גיבוי תקין');
+  }
+}
+
+document.getElementById('exportBtn').addEventListener('click', exportAllData);
+document.getElementById('importFileInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) importAllData(file);
+  e.target.value = '';
+});
+document.getElementById('backupCloseBtn').addEventListener('click', () => {
+  document.getElementById('backupOverlay').classList.remove('open');
+});
+document.getElementById('backupOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'backupOverlay') document.getElementById('backupOverlay').classList.remove('open');
+});
+
+/* ---------------- history view ---------------- */
+
+function renderHistoryTabs(){
+  const wrap = document.getElementById('historyDayTabs');
+  wrap.innerHTML = '';
+  DAYS.forEach(day => {
+    const tab = document.createElement('div');
+    tab.className = 'history-day-tab' + (day.key === historyDayKey ? ' active' : '');
+    tab.textContent = `יום ${day.label}`;
+    tab.onclick = () => {
+      historyDayKey = day.key;
+      editingSessionIndex = null;
+      renderHistoryTabs();
+      renderHistoryBody();
+    };
+    wrap.appendChild(tab);
+  });
+}
+
+function setSummary(sets){
+  const filled = (sets || []).filter(s => hasSetData(s));
+  if (!filled.length) return '—';
+  return filled.map(s => `${s.warmup ? 'ח· ' : ''}${s.reps ?? '-'}×${formatWeight(s.weight)}`).join(' · ');
+}
+
+function computeSessionVolume(session, day){
+  let vol = 0;
+  day.exercises.forEach(ex => {
+    const rec = normalizeExRecord(session.exercises ? session.exercises[ex.id] : null);
+    if (!rec || !rec.sets) return;
+    rec.sets.forEach(s => {
+      if (!s.warmup && s.reps !== null && s.reps !== undefined && s.weight !== null && s.weight !== undefined){
+        vol += s.reps * kgToDisplayUnit(s.weight);
+      }
+    });
+  });
+  return Math.round(vol);
+}
+
+async function renderHistoryBody(){
+  const day = DAYS.find(d => d.key === historyDayKey);
+  const data = await loadDayData(historyDayKey);
+  const body = document.getElementById('historyBody');
+  body.innerHTML = '';
+
+  if (historyMode === 'sets'){
+    let setLog = [];
+    try {
+      const res = await window.storage.get('set-log:' + historyDayKey, false);
+      setLog = (res && res.value) ? JSON.parse(res.value) : [];
+    } catch (e) {
+      setLog = [];
+    }
+    renderSetLogBody(setLog, body);
+    return;
+  }
+
+  const sessions = data.history || [];
+  if (!sessions.length){
+    body.innerHTML = '<div class="history-empty">עדיין אין אימונים שמורים ליום זה</div>';
+    return;
+  }
+
+  sessions.forEach((session, idx) => {
+    const exCount = day.exercises.filter(ex => {
+      const rec = normalizeExRecord(session.exercises ? session.exercises[ex.id] : null);
+      return rec && rec.sets && rec.sets.some(s => hasSetData(s));
+    }).length;
+    const sessionVolume = computeSessionVolume(session, day);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'session' + (idx === 0 || idx === editingSessionIndex ? ' open' : '');
+
+    const isEditing = idx === editingSessionIndex;
+    const detailHtml = isEditing
+      ? buildSessionEditForm(day, session, idx)
+      : (() => {
+          let detailRows = '';
+          day.exercises.forEach(ex => {
+            const rec = normalizeExRecord(session.exercises ? session.exercises[ex.id] : null);
+            if (!rec || !rec.sets || !rec.sets.some(s => hasSetData(s))) return;
+            detailRows += `
+              <div class="session-ex-row">
+                <span class="session-ex-name">${ex.name}</span>
+                <span class="session-ex-sets">${setSummary(rec.sets)}</span>
+              </div>`;
+            if (rec.note) detailRows += `<div class="session-note">📝 ${rec.note}</div>`;
+          });
+          return detailRows || '<div class="history-empty">אין נתונים</div>';
+        })();
+
+    wrap.innerHTML = `
+      <div class="session-head">
+        <div>
+          <div class="session-date">${session.date}</div>
+          <div class="session-sub">${exCount} תרגילים · נפח: ${sessionVolume} ${unitLabel()}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="icon-btn danger session-delete-btn" data-session="${idx}" title="מחק אימון">🗑</button>
+          <button class="icon-btn session-edit-btn" data-session="${idx}" title="ערוך אימון">✏️</button>
+          <div class="session-chevron">▾</div>
+        </div>
+      </div>
+      <div class="session-detail">${detailHtml}</div>
+    `;
+
+    wrap.querySelector('.session-head').addEventListener('click', (e) => {
+      if (e.target.closest('.session-edit-btn') || e.target.closest('.session-delete-btn')) return;
+      wrap.classList.toggle('open');
+    });
+
+    wrap.querySelector('.session-edit-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      editingSessionIndex = isEditing ? null : idx;
+      renderHistoryBody();
+    });
+
+    wrap.querySelector('.session-delete-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      showConfirm(
+        'למחוק את האימון?',
+        `האימון מתאריך ${session.date} יימחק לצמיתות ולא ניתן יהיה לשחזר אותו.`,
+        () => deleteSession(historyDayKey, idx),
+        'מחק אימון'
+      );
+    });
+
+    if (isEditing){
+      wrap.querySelector('.session-edit-cancel').addEventListener('click', (e) => {
+        e.stopPropagation();
+        editingSessionIndex = null;
+        renderHistoryBody();
+      });
+      wrap.querySelector('.session-edit-save').addEventListener('click', (e) => {
+        e.stopPropagation();
+        saveSessionEdits(historyDayKey, idx);
+      });
+    }
+
+    body.appendChild(wrap);
+  });
+}
+
+function buildSessionEditForm(day, session, sIdx){
+  let rows = '';
+  day.exercises.forEach(ex => {
+    const rec = normalizeExRecord(session.exercises ? session.exercises[ex.id] : null);
+    if (!rec || !rec.sets || !rec.sets.length) return;
+    let setRows = '';
+    rec.sets.forEach((s, i) => {
+      const weightVal = s.weight !== null && s.weight !== undefined ? kgToDisplayUnit(s.weight) : '';
+      setRows += `
+        <tr>
+          <td style="width:26px;color:var(--muted);font-size:12px;text-align:center;">${i + 1}${s.warmup ? ' (ח)' : ''}</td>
+          <td><input type="number" class="edit-set-input" data-session="${sIdx}" data-ex="${ex.id}" data-set="${i}" data-field="reps" value="${s.reps ?? ''}"></td>
+          <td><input type="number" step="0.5" class="edit-set-input" data-session="${sIdx}" data-ex="${ex.id}" data-set="${i}" data-field="weight" value="${weightVal}"></td>
+        </tr>`;
+    });
+    rows += `
+      <div style="margin-bottom:12px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px;">${ex.name}</div>
+        <table class="sets">
+          <thead><tr><th style="width:26px;"></th><th>חזרות</th><th>משקל (${unitLabel()})</th></tr></thead>
+          <tbody>${setRows}</tbody>
+        </table>
+      </div>`;
+  });
+  return `
+    <div class="session-edit-form">
+      ${rows || '<div class="history-empty">אין נתונים לעריכה</div>'}
+      <div style="display:flex;gap:10px;margin-top:6px;">
+        <button class="reset-btn session-edit-cancel" style="flex:1;">ביטול</button>
+        <button class="save-btn session-edit-save" style="flex:1;">שמור שינויים</button>
+      </div>
+    </div>`;
+}
+
+async function saveSessionEdits(dayKey, sIdx){
+  const data = await loadDayData(dayKey);
+  const day = DAYS.find(d => d.key === dayKey);
+  const session = data.history[sIdx];
+  if (!session){
+    editingSessionIndex = null;
+    renderHistoryBody();
+    return;
+  }
+
+  day.exercises.forEach(ex => {
+    const rec = normalizeExRecord(session.exercises ? session.exercises[ex.id] : null);
+    if (!rec || !rec.sets || !rec.sets.length) return;
+    rec.sets.forEach((s, i) => {
+      const repsInput = document.querySelector(`.edit-set-input[data-session="${sIdx}"][data-ex="${ex.id}"][data-set="${i}"][data-field="reps"]`);
+      const weightInput = document.querySelector(`.edit-set-input[data-session="${sIdx}"][data-ex="${ex.id}"][data-set="${i}"][data-field="weight"]`);
+      const reps = repsInput && repsInput.value !== '' ? Number(repsInput.value) : null;
+      const weightDisplay = weightInput && weightInput.value !== '' ? Number(weightInput.value) : null;
+      s.reps = reps;
+      s.weight = weightDisplay !== null ? displayUnitToKg(weightDisplay) : null;
+    });
+    session.exercises[ex.id] = rec;
+  });
+
+  data.history[sIdx] = session;
+  if (sIdx === 0) data.last = session.exercises;
+
+  const ok = await saveDayData(dayKey, data);
+  editingSessionIndex = null;
+  showToast(ok ? 'האימון עודכן ✓' : 'העדכון נכשל, נסה שוב');
+  renderHistoryBody();
+  if (dayKey === currentDayKey) renderExercises();
+}
+
+async function deleteSession(dayKey, idx){
+  const data = await loadDayData(dayKey);
+  if (!data.history || !data.history[idx]){
+    editingSessionIndex = null;
+    renderHistoryBody();
+    return;
+  }
+  data.history.splice(idx, 1);
+  data.last = data.history[0] ? data.history[0].exercises : null;
+  editingSessionIndex = null;
+  const ok = await saveDayData(dayKey, data);
+  showToast(ok ? 'האימון נמחק' : 'המחיקה נכשלה, נסה שוב');
+  renderHistoryBody();
+  if (dayKey === currentDayKey) renderExercises();
+}
+
+function renderSetLogBody(log, body){
+  if (!log.length){
+    body.innerHTML = '<div class="history-empty">עדיין לא נשמרו סטים בודדים ליום זה</div>';
+    return;
+  }
+  log.forEach(entry => {
+    const row = document.createElement('div');
+    row.className = 'set-log-row';
+    row.innerHTML = `
+      <div>
+        <div class="set-log-main">${entry.exerciseName} — סט ${entry.setIndex}${entry.warmup ? '<span class="warmup-tag">חימום</span>' : ''}</div>
+        <div class="set-log-sub">${entry.reps ?? '-'} חזרות · ${formatWeight(entry.weight)}</div>
+      </div>
+      <div class="set-log-time">${entry.date}<br>${entry.time}</div>
+    `;
+    body.appendChild(row);
+  });
+}
+
+function openHistory(){
+  historyDayKey = currentDayKey;
+  historyMode = 'sessions';
+  editingSessionIndex = null;
+  document.querySelectorAll('.history-mode-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-mode') === 'sessions'));
+  renderHistoryTabs();
+  renderHistoryBody();
+  document.getElementById('historyOverlay').classList.add('open');
+}
+
+function closeHistory(){
+  document.getElementById('historyOverlay').classList.remove('open');
+}
+
+document.getElementById('historyBtn').addEventListener('click', openHistory);
+document.getElementById('historyCloseBtn').addEventListener('click', closeHistory);
+document.getElementById('historyOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'historyOverlay') closeHistory();
+});
+document.querySelectorAll('.history-mode-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    historyMode = tab.getAttribute('data-mode');
+    editingSessionIndex = null;
+    document.querySelectorAll('.history-mode-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    renderHistoryBody();
+  });
+});
+
+/* ---------------- init ---------------- */
+
+async function init(){
+  const overrides = await loadOverrides();
+  DAYS = buildDays(overrides);
+  selectDay(pickDefaultDay());
+  startWorkoutClock();
+}
+init();
+</script>
+</body>
+</html>
